@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US-Bangla MASS Hand Over List Generator</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+        }
+        .hidden { display: none !important; }
+        
+        /* Containers */
+        .screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            background-color: #0b2e59;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            animation: fadeInOut 3s ease-in-out forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.9); }
+            20% { opacity: 1; transform: scale(1); }
+            80% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.1); }
+        }
+
+        /* Form Styles (Login & Dashboard) */
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        .form-container h2 {
+            text-align: center;
+            color: #0b2e59;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #0b2e59;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .btn:hover { background-color: #061d38; }
+        .btn-secondary { background-color: #555; }
+        .btn-secondary:hover { background-color: #333; }
+        
+        .btn-logout {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-logout:hover { background-color: #c9302c; }
+
+        /* Report Page Styles */
+        #report-screen {
+            background-color: white;
+            justify-content: flex-start;
+            padding: 40px;
+            font-family: 'Times New Roman', Times, serif;
+            color: #000;
+            text-transform: uppercase;
+        }
+        .report-wrapper {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid black;
+            padding-bottom: 15px;
+            gap: 15px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            white-space: nowrap; 
+        }
+        .brand-text-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        .brand-name {
+            font-family: Arial, sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 26px;
+            color: #0b2e59;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        .brand-sub {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            letter-spacing: 5px;
+            color: black;
+            margin-top: 5px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        /* Modernized Title Line */
+        .title-area {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 18px;
+            font-weight: 900;
+            color: #0b2e59;
+            letter-spacing: 1px;
+            background-color: #f0f4f8;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border-left: 6px solid #0b2e59;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+            text-align: center;
+            flex: 1;
+        }
+
+        .flight-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            table-layout: fixed; 
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+            word-wrap: break-word; 
+        }
+        th { font-size: 15px; }
+        .note {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 30px;
+            margin-top: 15px;
+        }
+        .ack-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        /* Guarantee One Page Print Settings */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0.5in;
+            }
+            body { background-color: white; }
+            .screen { min-height: auto; padding: 0; display: block; }
+            #report-screen { padding: 0; }
+            .report-wrapper { max-width: 100%; page-break-inside: avoid; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Splash Screen -->
+    <div id="splash-screen" class="screen">
+        WELCOME TO RADOAN'S APP
+    </div>
+
+    <!-- 2. Login Page -->
+    <div id="login-screen" class="screen hidden">
+        <div class="form-container">
+            <h2>System Login</h2>
+            <div class="form-group">
+                <label>LOAD CONTROLLER</label>
+                <input type="text" id="username" placeholder="Enter your name" required style="text-transform: uppercase;">
+            </div>
+            <div class="form-group">
+                <label>DESIGNATION</label>
+                <select id="designation">
+                    <option value="EXECUTIVE">EXECUTIVE</option>
+                    <option value="SR. EXE">SR. EXECUTIVE</option>
+                </select>
+            </div>
+            <button class="btn" onclick="handleLogin()">LOG IN</button>
+        </div>
+    </div>
+
+    <!-- 3. Dashboard / Data Entry Page -->
+    <div id="dashboard-screen" class="screen hidden">
+        <div class="form-container" style="max-width: 600px;">
+            
+            <!-- Welcome Header with Logout Button -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 id="welcome-text" style="text-transform: uppercase; margin: 0;">Welcome</h2>
+                <button class="btn-logout" onclick="handleLogout()">LOG OUT</button>
+            </div>
+            
+            <div style="display: flex; gap: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>DATE</label>
+                    <input type="date" id="flight-date">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>FLIGHT NO</label>
+                    <input type="number" id="flight-no" placeholder="e.g. 315">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>DESTINATION</label>
+                <select id="flight-dest">
+                    <option value="CGP">CGP</option><option value="SPD">SPD</option>
+                    <option value="ZYL">ZYL</option><option value="CXB">CXB</option>
+                    <option value="JSR">JSR</option><option value="RJH">RJH</option>
+                    <option value="BZL">BZL</option><option value="DXB">DXB</option>
+                    <option value="AUH">AUH</option><option value="SHJ">SHJ</option>
+                    <option value="RUH">RUH</option><option value="JED">JED</option>
+                    <option value="MLE">MLE</option><option value="SIN">SIN</option>
+                    <option value="CAN">CAN</option><option value="MCT">MCT</option>
+                    <option value="BKK">BKK</option><option value="CCU">CCU</option>
+                    <option value="MAA">MAA</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>FLST (Paste System Data Here)</label>
+                <textarea id="flst-data" rows="8" placeholder="Paste user information from system here..." style="text-transform: uppercase;"></textarea>
+            </div>
+
+            <button class="btn" onclick="generateReport()">GENERATE</button>
+        </div>
+    </div>
+
+    <!-- 4. Final Report Page -->
+    <div id="report-screen" class="screen hidden">
+        <div class="report-wrapper">
+            
+            <div class="report-header">
+                <div class="logo-area">
+                    <div class="brand-text-container">
+                        <div class="brand-name">US-BANGLA</div>
+                        <div class="brand-sub">A I R L I N E S</div>
+                    </div>
+                </div>
+                
+                <div class="title-area">MEET AND ASSIST (MASS) HAND OVER LIST</div>
+            </div>
+
+            <div class="flight-info">
+                <div>FLIGHT NO. <span id="out-flight"></span></div>
+                <div>DATE: <span id="out-date"></span></div>
+                <div>STATION: DAC</div>
+            </div>
+
+            <!-- Passenger Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 32%;">NAME OF PASSENGER</th>
+                        <th style="width: 10%;">SEAT NO.</th>
+                        <th style="width: 13%;">DESTINATION</th>
+                        <th style="width: 10%;">CATEGORY</th>
+                        <th style="width: 35%;">REMARKS</th>
+                    </tr>
+                </thead>
+                <tbody id="pax-table-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+
+            <div class="note">*PLEASE INDICATE: WEHR-WHEEL CHAIR UPTO RAMP, MEDA, UM/YP, ETC.</div>
+
+            <div class="ack-title">ACKNOWLEDGEMENT</div>
+
+            <!-- Acknowledgement Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%;"></th>
+                        <th style="width: 35%;">NAME/DESIGNATION</th>
+                        <th style="width: 15%;">STATION</th>
+                        <th style="width: 20%;">SIGNATURE</th>
+                        <th style="width: 15%;">DATE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight:bold; height:35px;">UPLIFT<br>STATION</td>
+                        <td id="out-uplift-name"></td>
+                        <td>DAC</td>
+                        <td></td>
+                        <td id="out-uplift-date"></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:bold; height:35px;">CABIN<br>CREW</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:bold; height:35px;">TRANSIT<br>STATION</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:bold; height:35px;">ARRIVAL<br>STATION</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="actions no-print">
+                <button class="btn" onclick="window.print()">PRINT / SAVE AS PDF</button>
+                <button class="btn btn-secondary" onclick="goBackToDashboard()">BACK TO EDIT</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userData = { name: '', designation: '' };
+
+        // Save Dashboard Input Data as user types to prevent any data loss
+        const inputIds = ['flight-date', 'flight-no', 'flight-dest', 'flst-data'];
+        inputIds.forEach(id => {
+            document.getElementById(id).addEventListener('input', function(e) {
+                localStorage.setItem('massApp_' + id, e.target.value);
+            });
+        });
+
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('hidden');
+                
+                // Check if user is already logged in
+                const savedName = localStorage.getItem('massApp_username');
+                const savedDesig = localStorage.getItem('massApp_designation');
+                
+                if (savedName && savedDesig) {
+                    userData.name = savedName;
+                    userData.designation = savedDesig;
+                    document.getElementById('welcome-text').innerText = `WELCOME, ${userData.name}`;
+                    
+                    // Restore previously saved form data if available
+                    inputIds.forEach(id => {
+                        const savedValue = localStorage.getItem('massApp_' + id);
+                        if(savedValue) {
+                            document.getElementById(id).value = savedValue;
+                        }
+                    });
+
+                    // If no date was saved, default to today
+                    if(!document.getElementById('flight-date').value) {
+                        document.getElementById('flight-date').value = new Date().toISOString().split('T')[0];
+                    }
+
+                    document.getElementById('dashboard-screen').classList.remove('hidden');
+                } else {
+                    // Show login if no session is found
+                    document.getElementById('login-screen').classList.remove('hidden');
+                    document.getElementById('flight-date').value = new Date().toISOString().split('T')[0];
+                }
+            }, 3000); 
+        };
+
+        function handleLogin() {
+            const nameInput = document.getElementById('username').value.trim();
+            const desigInput = document.getElementById('designation').value;
+
+            if (nameInput === '') {
+                alert("Please enter Load Controller name.");
+                return;
+            }
+
+            userData.name = nameInput.toUpperCase();
+            userData.designation = desigInput.toUpperCase();
+
+            // Save login info so session isn't lost
+            localStorage.setItem('massApp_username', userData.name);
+            localStorage.setItem('massApp_designation', userData.designation);
+
+            document.getElementById('welcome-text').innerText = `WELCOME, ${userData.name}`;
+            
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            // Delete all saved user & form data
+            localStorage.removeItem('massApp_username');
+            localStorage.removeItem('massApp_designation');
+            inputIds.forEach(id => localStorage.removeItem('massApp_' + id));
+
+            // Reset variables and clear visual inputs
+            userData = { name: '', designation: '' };
+            document.getElementById('username').value = '';
+            document.getElementById('flight-no').value = '';
+            document.getElementById('flst-data').value = '';
+            document.getElementById('flight-date').value = new Date().toISOString().split('T')[0];
+
+            // Switch to Login screen
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        }
+
+        function formatDate(dateStr) {
+            if(!dateStr) return "";
+            const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            const d = new Date(dateStr);
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = months[d.getMonth()];
+            const year = String(d.getFullYear()).slice(-2);
+            return `${day} ${month} ${year}`;
+        }
+
+        function parseFLST(text) {
+            let paxList = [];
+            let lines = text.toUpperCase().split('\n');
+            let currentPax = { name: '', seat: '', remarks: '' };
+
+            lines.forEach(line => {
+                let nameMatch = line.match(/([A-Z]+\/[A-Z\s]+(?:MR|MS|MRS|MISS|MSTR))/);
+                let seatMatch = line.match(/\b(\d{1,2}[A-K])\b/);
+
+                if (nameMatch) {
+                    if (currentPax.name) {
+                        paxList.push({...currentPax});
+                        currentPax = { name: '', seat: '', remarks: '' };
+                    }
+                    currentPax.name = nameMatch[1];
+                }
+                
+                if (seatMatch && !currentPax.seat) {
+                    currentPax.seat = seatMatch[1];
+                }
+
+                if (line.includes('MAAS')) {
+                    currentPax.remarks = line.substring(line.indexOf('MAAS') + 4).trim();
+                }
+            });
+
+            if (currentPax.name) {
+                paxList.push(currentPax);
+            }
+
+            return paxList;
+        }
+
+        function generateReport() {
+            const dateInput = document.getElementById('flight-date').value;
+            const flightNoInput = document.getElementById('flight-no').value.trim();
+            const destInput = document.getElementById('flight-dest').value.toUpperCase();
+            const flstText = document.getElementById('flst-data').value;
+
+            if(flightNoInput === '') {
+                alert("Please enter Flight Number.");
+                return;
+            }
+
+            const formattedDate = formatDate(dateInput);
+            document.getElementById('out-flight').innerText = `BS- ${flightNoInput}`;
+            document.getElementById('out-date').innerText = formattedDate;
+
+            document.getElementById('out-uplift-name').innerText = `${userData.name} //${userData.designation}`;
+            document.getElementById('out-uplift-date').innerText = formattedDate;
+
+            const passengers = parseFLST(flstText);
+            const tbody = document.getElementById('pax-table-body');
+            tbody.innerHTML = ''; 
+
+            // Exactly 8 rows for a consistent 1-page fit
+            for (let i = 0; i < 8; i++) {
+                const tr = document.createElement('tr');
+                if (i < passengers.length) {
+                    const p = passengers[i];
+                    tr.innerHTML = `
+                        <td style="text-align:left; height: 35px;">${p.name || ''}</td>
+                        <td style="height: 35px;">${p.seat || ''}</td>
+                        <td style="height: 35px;">${destInput}</td>
+                        <td style="height: 35px;">MAAS</td>
+                        <td style="text-align:left; height: 35px;">${p.remarks || ''}</td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td style="height: 35px;"></td>
+                        <td style="height: 35px;"></td>
+                        <td style="height: 35px;"></td>
+                        <td style="height: 35px;"></td>
+                        <td style="height: 35px;"></td>
+                    `;
+                }
+                tbody.appendChild(tr);
+            }
+
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('report-screen').classList.remove('hidden');
+        }
+
+        function goBackToDashboard() {
+            document.getElementById('report-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
