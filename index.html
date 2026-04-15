@@ -243,6 +243,19 @@
                     <option value="SR. EXE">SR. EXECUTIVE</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label>STATION</label>
+                <select id="user-station">
+                    <option value="DAC" selected>DAC</option>
+                    <option value="CGP">CGP</option>
+                    <option value="SPD">SPD</option>
+                    <option value="JSR">JSR</option>
+                    <option value="RJH">RJH</option>
+                    <option value="ZYL">ZYL</option>
+                    <option value="BZL">BZL</option>
+                    <option value="CXB">CXB</option>
+                </select>
+            </div>
             <button class="btn" onclick="handleLogin()">LOG IN</button>
         </div>
     </div>
@@ -271,6 +284,7 @@
             <div class="form-group">
                 <label>DESTINATION</label>
                 <select id="flight-dest">
+                    <option value="DAC">DAC</option>
                     <option value="CGP">CGP</option><option value="SPD">SPD</option>
                     <option value="ZYL">ZYL</option><option value="CXB">CXB</option>
                     <option value="JSR">JSR</option><option value="RJH">RJH</option>
@@ -280,7 +294,7 @@
                     <option value="MLE">MLE</option><option value="SIN">SIN</option>
                     <option value="CAN">CAN</option><option value="MCT">MCT</option>
                     <option value="BKK">BKK</option><option value="CCU">CCU</option>
-                    <option value="MAA">MAA</option>
+                    <option value="MAA">MAA</option><option value="KUL">KUL</option>
                 </select>
             </div>
 
@@ -311,7 +325,7 @@
             <div class="flight-info">
                 <div>FLIGHT NO. <span id="out-flight"></span></div>
                 <div>DATE: <span id="out-date"></span></div>
-                <div>STATION: DAC</div>
+                <div>STATION: <span id="out-station"></span></div>
             </div>
 
             <!-- Passenger Table -->
@@ -349,7 +363,7 @@
                     <tr>
                         <td style="font-weight:bold; height:35px;">UPLIFT<br>STATION</td>
                         <td id="out-uplift-name"></td>
-                        <td>DAC</td>
+                        <td id="out-uplift-station"></td>
                         <td></td>
                         <td id="out-uplift-date"></td>
                     </tr>
@@ -385,7 +399,7 @@
     </div>
 
     <script>
-        let userData = { name: '', designation: '' };
+        let userData = { name: '', designation: '', station: '' };
 
         // Save Dashboard Input Data as user types to prevent any data loss
         const inputIds = ['flight-date', 'flight-no', 'flight-dest', 'flst-data'];
@@ -402,10 +416,12 @@
                 // Check if user is already logged in
                 const savedName = localStorage.getItem('massApp_username');
                 const savedDesig = localStorage.getItem('massApp_designation');
+                const savedStation = localStorage.getItem('massApp_station');
                 
-                if (savedName && savedDesig) {
+                if (savedName && savedDesig && savedStation) {
                     userData.name = savedName;
                     userData.designation = savedDesig;
+                    userData.station = savedStation;
                     document.getElementById('welcome-text').innerText = `WELCOME, ${userData.name}`;
                     
                     // Restore previously saved form data if available
@@ -433,6 +449,7 @@
         function handleLogin() {
             const nameInput = document.getElementById('username').value.trim();
             const desigInput = document.getElementById('designation').value;
+            const stationInput = document.getElementById('user-station').value;
 
             if (nameInput === '') {
                 alert("Please enter Load Controller name.");
@@ -441,10 +458,12 @@
 
             userData.name = nameInput.toUpperCase();
             userData.designation = desigInput.toUpperCase();
+            userData.station = stationInput.toUpperCase();
 
             // Save login info so session isn't lost
             localStorage.setItem('massApp_username', userData.name);
             localStorage.setItem('massApp_designation', userData.designation);
+            localStorage.setItem('massApp_station', userData.station);
 
             document.getElementById('welcome-text').innerText = `WELCOME, ${userData.name}`;
             
@@ -456,11 +475,13 @@
             // Delete all saved user & form data
             localStorage.removeItem('massApp_username');
             localStorage.removeItem('massApp_designation');
+            localStorage.removeItem('massApp_station');
             inputIds.forEach(id => localStorage.removeItem('massApp_' + id));
 
             // Reset variables and clear visual inputs
-            userData = { name: '', designation: '' };
+            userData = { name: '', designation: '', station: '' };
             document.getElementById('username').value = '';
+            document.getElementById('user-station').value = 'DAC';
             document.getElementById('flight-no').value = '';
             document.getElementById('flst-data').value = '';
             document.getElementById('flight-date').value = new Date().toISOString().split('T')[0];
@@ -527,6 +548,10 @@
             const formattedDate = formatDate(dateInput);
             document.getElementById('out-flight').innerText = `BS- ${flightNoInput}`;
             document.getElementById('out-date').innerText = formattedDate;
+            
+            // Set User's Station dynamically into Report Header and Uplift row
+            document.getElementById('out-station').innerText = userData.station;
+            document.getElementById('out-uplift-station').innerText = userData.station;
 
             document.getElementById('out-uplift-name').innerText = `${userData.name} //${userData.designation}`;
             document.getElementById('out-uplift-date').innerText = formattedDate;
