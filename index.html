@@ -272,29 +272,37 @@
             
             <div style="display: flex; gap: 15px;">
                 <div class="form-group" style="flex: 1;">
-                    <label>DATE</label>
-                    <input type="date" id="flight-date">
+                    <label>DATE <span style="color:red;">*</span></label>
+                    <input type="date" id="flight-date" required>
                 </div>
                 <div class="form-group" style="flex: 1;">
-                    <label>FLIGHT NO</label>
-                    <input type="number" id="flight-no" placeholder="e.g. 315">
+                    <label>FLIGHT NO <span style="color:red;">*</span></label>
+                    <input type="number" id="flight-no" placeholder="e.g. 315" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>DESTINATION</label>
-                <select id="flight-dest">
+                <label>DESTINATION <span style="color:red;">*</span></label>
+                <select id="flight-dest" required>
                     <option value="DAC">DAC</option>
                     <option value="CGP">CGP</option><option value="SPD">SPD</option>
                     <option value="ZYL">ZYL</option><option value="CXB">CXB</option>
                     <option value="JSR">JSR</option><option value="RJH">RJH</option>
                     <option value="BZL">BZL</option><option value="DXB">DXB</option>
                     <option value="AUH">AUH</option><option value="SHJ">SHJ</option>
-                    <option value="RUH">RUH</option><option value="JED">JED</option>
+                    <option value="RUH">RUH</option><option value="JED" selected>JED</option>
                     <option value="MLE">MLE</option><option value="SIN">SIN</option>
                     <option value="CAN">CAN</option><option value="MCT">MCT</option>
                     <option value="BKK">BKK</option><option value="CCU">CCU</option>
                     <option value="MAA">MAA</option><option value="KUL">KUL</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>CATEGORY <span style="color:red;">*</span></label>
+                <select id="flight-category" required>
+                    <option value="MAAS" selected>MAAS</option>
+                    <option value="WCHR">WCHR</option>
                 </select>
             </div>
 
@@ -402,7 +410,8 @@
         let userData = { name: '', designation: '', station: '' };
 
         // Save Dashboard Input Data as user types to prevent any data loss
-        const inputIds = ['flight-date', 'flight-no', 'flight-dest', 'flst-data'];
+        // Added 'flight-category' to array to save Category selection locally
+        const inputIds = ['flight-date', 'flight-no', 'flight-dest', 'flight-category', 'flst-data'];
         inputIds.forEach(id => {
             document.getElementById(id).addEventListener('input', function(e) {
                 localStorage.setItem('massApp_' + id, e.target.value);
@@ -483,6 +492,7 @@
             document.getElementById('username').value = '';
             document.getElementById('user-station').value = 'DAC';
             document.getElementById('flight-no').value = '';
+            document.getElementById('flight-category').value = 'MAAS';
             document.getElementById('flst-data').value = '';
             document.getElementById('flight-date').value = new Date().toISOString().split('T')[0];
 
@@ -501,7 +511,7 @@
             return `${day} ${month} ${year}`;
         }
 
-        function parseFLST(text) {
+        function parseFLST(text, selectedCategory) {
             let paxList = [];
             let lines = text.toUpperCase().split('\n');
             let currentPax = { name: '', seat: '', remarks: '' };
@@ -522,8 +532,13 @@
                     currentPax.seat = seatMatch[1];
                 }
 
-                if (line.includes('MAAS')) {
+                // Look for selected category first, fallback to MAAS/WCHR
+                if (line.includes(selectedCategory)) {
+                    currentPax.remarks = line.substring(line.indexOf(selectedCategory) + selectedCategory.length).trim();
+                } else if (line.includes('MAAS')) {
                     currentPax.remarks = line.substring(line.indexOf('MAAS') + 4).trim();
+                } else if (line.includes('WCHR')) {
+                    currentPax.remarks = line.substring(line.indexOf('WCHR') + 4).trim();
                 }
             });
 
@@ -538,12 +553,14 @@
             const dateInput = document.getElementById('flight-date').value;
             const flightNoInput = document.getElementById('flight-no').value.trim();
             const destInput = document.getElementById('flight-dest').value.toUpperCase();
+            const categoryInput = document.getElementById('flight-category').value.toUpperCase();
             const flstText = document.getElementById('flst-data').value;
 
-            if(flightNoInput === '') {
-                alert("Please enter Flight Number.");
-                return;
-            }
+            // Mandatory Field Checks
+            if(dateInput === '') { alert("Please select Date."); return; }
+            if(flightNoInput === '') { alert("Please enter Flight Number."); return; }
+            if(destInput === '') { alert("Please select Destination."); return; }
+            if(categoryInput === '') { alert("Please select Category."); return; }
 
             const formattedDate = formatDate(dateInput);
             document.getElementById('out-flight').innerText = `BS- ${flightNoInput}`;
@@ -556,7 +573,7 @@
             document.getElementById('out-uplift-name').innerText = `${userData.name} //${userData.designation}`;
             document.getElementById('out-uplift-date').innerText = formattedDate;
 
-            const passengers = parseFLST(flstText);
+            const passengers = parseFLST(flstText, categoryInput);
             const tbody = document.getElementById('pax-table-body');
             tbody.innerHTML = ''; 
 
@@ -569,7 +586,7 @@
                         <td style="text-align:left; height: 35px;">${p.name || ''}</td>
                         <td style="height: 35px;">${p.seat || ''}</td>
                         <td style="height: 35px;">${destInput}</td>
-                        <td style="height: 35px;">MAAS</td>
+                        <td style="height: 35px;">${categoryInput}</td> <!-- Dynamic Category Selected -->
                         <td style="text-align:left; height: 35px;">${p.remarks || ''}</td>
                     `;
                 } else {
