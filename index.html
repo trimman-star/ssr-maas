@@ -107,12 +107,19 @@
             font-family: 'Times New Roman', Times, serif;
             color: #000;
             text-transform: uppercase;
+            width: 100%;
+            box-sizing: border-box;
         }
-        .report-wrapper {
+        
+        /* Each individual Page Container */
+        .report-page {
             width: 100%;
             max-width: 850px;
-            margin: 0 auto;
+            margin: 0 auto 50px auto;
+            border-bottom: 2px dashed #ccc; /* Visual separation on screen */
+            padding-bottom: 50px;
         }
+
         .report-header {
             display: flex;
             justify-content: space-between;
@@ -204,10 +211,12 @@
         .actions {
             display: flex;
             gap: 10px;
-            margin-top: 30px;
+            margin: 20px auto;
+            max-width: 500px;
+            justify-content: center;
         }
 
-        /* Guarantee One Page Print Settings */
+        /* Guarantee Multiple Pages Print Settings */
         @media print {
             @page {
                 size: A4 portrait;
@@ -216,7 +225,18 @@
             body { background-color: white; }
             .screen { min-height: auto; padding: 0; display: block; }
             #report-screen { padding: 0; }
-            .report-wrapper { max-width: 100%; page-break-inside: avoid; }
+            
+            .report-page {
+                border-bottom: none;
+                padding-bottom: 0;
+                margin: 0;
+                page-break-after: always; /* Force print break after each block */
+                page-break-inside: avoid;
+            }
+            .report-page:last-child {
+                page-break-after: auto; /* Prevent empty page at the end */
+            }
+
             .no-print { display: none !important; }
         }
     </style>
@@ -290,10 +310,10 @@
                     <option value="JSR">JSR</option><option value="RJH">RJH</option>
                     <option value="BZL">BZL</option><option value="DXB">DXB</option>
                     <option value="AUH">AUH</option><option value="SHJ">SHJ</option>
-                    <option value="RUH">RUH</option><option value="JED" selected>JED</option>
+                    <option value="RUH">RUH</option><option value="JED">JED</option>
                     <option value="MLE">MLE</option><option value="SIN">SIN</option>
                     <option value="CAN">CAN</option><option value="MCT">MCT</option>
-                    <option value="BKK">BKK</option><option value="CCU">CCU</option>
+                    <option value="BKK" selected>BKK</option><option value="CCU">CCU</option>
                     <option value="MAA">MAA</option><option value="KUL">KUL</option>
                 </select>
             </div>
@@ -317,92 +337,14 @@
 
     <!-- 4. Final Report Page -->
     <div id="report-screen" class="screen hidden">
-        <div class="report-wrapper">
-            
-            <div class="report-header">
-                <div class="logo-area">
-                    <div class="brand-text-container">
-                        <div class="brand-name">US-BANGLA</div>
-                        <div class="brand-sub">A I R L I N E S</div>
-                    </div>
-                </div>
-                
-                <div class="title-area">MEET AND ASSIST (MASS) HAND OVER LIST</div>
-            </div>
+        
+        <!-- Multiple pages will be generated inside this container -->
+        <div id="report-container" style="width: 100%;"></div>
 
-            <div class="flight-info">
-                <div>FLIGHT NO. <span id="out-flight"></span></div>
-                <div>DATE: <span id="out-date"></span></div>
-                <div>STATION: <span id="out-station"></span></div>
-            </div>
-
-            <!-- Passenger Table -->
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 32%;">NAME OF PASSENGER</th>
-                        <th style="width: 10%;">SEAT NO.</th>
-                        <th style="width: 13%;">DESTINATION</th>
-                        <th style="width: 10%;">CATEGORY</th>
-                        <th style="width: 35%;">REMARKS</th>
-                    </tr>
-                </thead>
-                <tbody id="pax-table-body">
-                    <!-- Populated by JS -->
-                </tbody>
-            </table>
-
-            <div class="note">*PLEASE INDICATE: WEHR-WHEEL CHAIR UPTO RAMP, MEDA, UM/YP, ETC.</div>
-
-            <div class="ack-title">ACKNOWLEDGEMENT</div>
-
-            <!-- Acknowledgement Table -->
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 15%;"></th>
-                        <th style="width: 35%;">NAME/DESIGNATION</th>
-                        <th style="width: 15%;">STATION</th>
-                        <th style="width: 20%;">SIGNATURE</th>
-                        <th style="width: 15%;">DATE</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="font-weight:bold; height:35px;">UPLIFT<br>STATION</td>
-                        <td id="out-uplift-name"></td>
-                        <td id="out-uplift-station"></td>
-                        <td></td>
-                        <td id="out-uplift-date"></td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight:bold; height:35px;">CABIN<br>CREW</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight:bold; height:35px;">TRANSIT<br>STATION</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight:bold; height:35px;">ARRIVAL<br>STATION</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="actions no-print">
-                <button class="btn" onclick="window.print()">PRINT / SAVE AS PDF</button>
-                <button class="btn btn-secondary" onclick="goBackToDashboard()">BACK TO EDIT</button>
-            </div>
+        <!-- Buttons -->
+        <div class="actions no-print">
+            <button class="btn" onclick="window.print()">PRINT / SAVE AS PDF</button>
+            <button class="btn btn-secondary" onclick="goBackToDashboard()">BACK TO EDIT</button>
         </div>
     </div>
 
@@ -410,7 +352,6 @@
         let userData = { name: '', designation: '', station: '' };
 
         // Save Dashboard Input Data as user types to prevent any data loss
-        // Added 'flight-category' to array to save Category selection locally
         const inputIds = ['flight-date', 'flight-no', 'flight-dest', 'flight-category', 'flst-data'];
         inputIds.forEach(id => {
             document.getElementById(id).addEventListener('input', function(e) {
@@ -517,7 +458,7 @@
             let currentPax = { name: '', seat: '', remarks: '' };
 
             lines.forEach(line => {
-                let nameMatch = line.match(/([A-Z]+\/[A-Z\s]+(?:MR|MS|MRS|MISS|MSTR))/);
+                let nameMatch = line.match(/([A-Z]+\/[A-Z\s]+?(?:\bMR\b|\bMS\b|\bMRS\b|\bMISS\b|\bMSTR\b)?)(?=\s{2,}|\sAD\b|\sCHD\b|\sINF\b|$)/);
                 let seatMatch = line.match(/\b(\d{1,2}[A-K])\b/);
 
                 if (nameMatch) {
@@ -563,44 +504,134 @@
             if(categoryInput === '') { alert("Please select Category."); return; }
 
             const formattedDate = formatDate(dateInput);
-            document.getElementById('out-flight').innerText = `BS- ${flightNoInput}`;
-            document.getElementById('out-date').innerText = formattedDate;
-            
-            // Set User's Station dynamically into Report Header and Uplift row
-            document.getElementById('out-station').innerText = userData.station;
-            document.getElementById('out-uplift-station').innerText = userData.station;
-
-            document.getElementById('out-uplift-name').innerText = `${userData.name} //${userData.designation}`;
-            document.getElementById('out-uplift-date').innerText = formattedDate;
-
             const passengers = parseFLST(flstText, categoryInput);
-            const tbody = document.getElementById('pax-table-body');
-            tbody.innerHTML = ''; 
+            
+            // Container where all dynamic pages will go
+            const reportContainer = document.getElementById('report-container');
+            reportContainer.innerHTML = ''; // Clear previous reports
 
-            // Exactly 8 rows for a consistent 1-page fit
-            for (let i = 0; i < 8; i++) {
-                const tr = document.createElement('tr');
-                if (i < passengers.length) {
-                    const p = passengers[i];
-                    tr.innerHTML = `
-                        <td style="text-align:left; height: 35px;">${p.name || ''}</td>
-                        <td style="height: 35px;">${p.seat || ''}</td>
-                        <td style="height: 35px;">${destInput}</td>
-                        <td style="height: 35px;">${categoryInput}</td> <!-- Dynamic Category Selected -->
-                        <td style="text-align:left; height: 35px;">${p.remarks || ''}</td>
-                    `;
-                } else {
-                    tr.innerHTML = `
-                        <td style="height: 35px;"></td>
-                        <td style="height: 35px;"></td>
-                        <td style="height: 35px;"></td>
-                        <td style="height: 35px;"></td>
-                        <td style="height: 35px;"></td>
-                    `;
+            // Calculate total pages needed (min 1 page, max depends on passengers length)
+            const totalPages = Math.max(1, Math.ceil(passengers.length / 8));
+
+            for (let page = 0; page < totalPages; page++) {
+                
+                // Build Table Rows for this specific page (8 rows max)
+                let tbodyHtml = '';
+                for (let i = 0; i < 8; i++) {
+                    const paxIndex = (page * 8) + i;
+                    
+                    if (paxIndex < passengers.length) {
+                        const p = passengers[paxIndex];
+                        tbodyHtml += `
+                            <tr>
+                                <td style="text-align:left; height: 35px;">${p.name || ''}</td>
+                                <td style="height: 35px;">${p.seat || ''}</td>
+                                <td style="height: 35px;">${destInput}</td>
+                                <td style="height: 35px;">${categoryInput}</td> 
+                                <td style="text-align:left; height: 35px;">${p.remarks || ''}</td>
+                            </tr>
+                        `;
+                    } else {
+                        // Empty Row Filler
+                        tbodyHtml += `
+                            <tr>
+                                <td style="height: 35px;"></td>
+                                <td style="height: 35px;"></td>
+                                <td style="height: 35px;"></td>
+                                <td style="height: 35px;"></td>
+                                <td style="height: 35px;"></td>
+                            </tr>
+                        `;
+                    }
                 }
-                tbody.appendChild(tr);
+
+                // Construct the full HTML structure for this 1 Page
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'report-page';
+                pageDiv.innerHTML = `
+                    <div class="report-header">
+                        <div class="logo-area">
+                            <div class="brand-text-container">
+                                <div class="brand-name">US-BANGLA</div>
+                                <div class="brand-sub">A I R L I N E S</div>
+                            </div>
+                        </div>
+                        <div class="title-area">MEET AND ASSIST (MASS) HAND OVER LIST</div>
+                    </div>
+
+                    <div class="flight-info">
+                        <div>FLIGHT NO. BS- ${flightNoInput}</div>
+                        <div>DATE: ${formattedDate}</div>
+                        <div>STATION: ${userData.station}</div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 32%;">NAME OF PASSENGER</th>
+                                <th style="width: 10%;">SEAT NO.</th>
+                                <th style="width: 13%;">DESTINATION</th>
+                                <th style="width: 10%;">CATEGORY</th>
+                                <th style="width: 35%;">REMARKS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tbodyHtml}
+                        </tbody>
+                    </table>
+
+                    <div class="note">*PLEASE INDICATE: WEHR-WHEEL CHAIR UPTO RAMP, MEDA, UM/YP, ETC.</div>
+
+                    <div class="ack-title">ACKNOWLEDGEMENT</div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;"></th>
+                                <th style="width: 35%;">NAME/DESIGNATION</th>
+                                <th style="width: 15%;">STATION</th>
+                                <th style="width: 20%;">SIGNATURE</th>
+                                <th style="width: 15%;">DATE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight:bold; height:35px;">UPLIFT<br>STATION</td>
+                                <td>${userData.name} //${userData.designation}</td>
+                                <td>${userData.station}</td>
+                                <td></td>
+                                <td>${formattedDate}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold; height:35px;">CABIN<br>CREW</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold; height:35px;">TRANSIT<br>STATION</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold; height:35px;">ARRIVAL<br>STATION</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+                
+                // Append the completely built page to the container
+                reportContainer.appendChild(pageDiv);
             }
 
+            // Switch Screen
             document.getElementById('dashboard-screen').classList.add('hidden');
             document.getElementById('report-screen').classList.remove('hidden');
         }
