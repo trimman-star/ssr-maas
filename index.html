@@ -147,20 +147,20 @@
             margin-bottom: 5px;
         }
         .typing-text {
-            color: #d9534f;
+            color: #0b2e59; /* Changed to Dark Blue */
             font-family: 'Courier New', Courier, monospace;
             font-weight: 900;
             font-size: 15px;
             white-space: nowrap;
             overflow: hidden;
             border-right: 2px solid #0b2e59;
-            width: 25ch; /* Exact character length */
-            animation: typing 4s steps(25, end) infinite alternate,
+            width: 29ch; /* Adjusted for extra dots */
+            animation: typing 6s steps(29, end) infinite alternate, /* Slower animation */
                        blink 0.5s step-end infinite alternate;
         }
         @keyframes typing {
             0% { width: 0; }
-            100% { width: 25ch; }
+            100% { width: 29ch; }
         }
         @keyframes blink {
             50% { border-color: transparent; }
@@ -419,7 +419,7 @@
             
             <!-- Animated Typing Text added to Dashboard -->
             <div class="typing-container">
-                <div class="typing-text">Invention Of Radoan Rasel</div>
+                <div class="typing-text">Invention Of Radoan Rasel....</div>
             </div>
 
             <!-- Welcome Header with Top Navigation Buttons -->
