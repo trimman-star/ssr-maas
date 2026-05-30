@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>US-Bangla MASS Hand Over List Generator</title>
     <style>
-        /* General Styles */
+        /* General Styles & Aviation Vibe Background */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f7f6;
+            /* High-altitude sky gradient */
+            background: linear-gradient(135deg, #87CEEB 0%, #0b2e59 100%);
+            background-attachment: fixed;
         }
         .hidden { display: none !important; }
         
@@ -27,10 +29,12 @@
         #splash-screen {
             background-color: #0b2e59;
             color: white;
-            font-size: 2.5rem;
-            font-weight: bold;
+            font-size: 2.8rem;
+            font-weight: 900;
             text-align: center;
+            letter-spacing: 2px;
             animation: fadeInOut 3s ease-in-out forwards;
+            background: linear-gradient(135deg, #0b2e59 0%, #1a4a7b 100%);
         }
 
         @keyframes fadeInOut {
@@ -40,15 +44,17 @@
             100% { opacity: 0; transform: scale(1.1); }
         }
 
-        /* Form Styles (Login, Dashboard & History) */
+        /* Form Styles - Modernized Glassmorphism Vibe */
         .form-container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             padding: 35px 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
             width: 100%;
             max-width: 500px;
-            border-top: 6px solid #0b2e59; /* Modern Accent Line */
+            border-top: 6px solid #0b2e59; 
+            border-bottom: 6px solid #d9534f;
         }
         .form-container h2 {
             text-align: center;
@@ -62,24 +68,27 @@
             display: block;
             margin-bottom: 6px;
             font-weight: bold;
-            color: #333;
+            color: #2c3e50;
             font-size: 13px;
             letter-spacing: 0.5px;
         }
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
-            transition: all 0.3s ease; /* Modern input transition */
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-weight: 600;
+            color: #334155;
+            transition: all 0.3s ease; 
         }
         /* Dynamic Focus Effect */
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             border-color: #0b2e59;
-            box-shadow: 0 0 8px rgba(11, 46, 89, 0.2);
+            box-shadow: 0 0 10px rgba(11, 46, 89, 0.2);
             outline: none;
+            background-color: #f8fafc;
         }
 
         .btn {
@@ -88,16 +97,21 @@
             background-color: #0b2e59;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 900;
+            letter-spacing: 1px;
             margin-top: 10px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
         }
-        .btn:hover { background-color: #061d38; }
-        .btn-secondary { background-color: #555; }
-        .btn-secondary:hover { background-color: #333; }
+        .btn:hover { 
+            background-color: #061d38; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .btn-secondary { background-color: #64748b; }
+        .btn-secondary:hover { background-color: #475569; }
         
         /* Top Navigation Buttons */
         .btn-logout {
@@ -105,26 +119,52 @@
             color: white;
             border: none;
             padding: 8px 15px;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 14px;
             cursor: pointer;
             font-weight: bold;
             transition: 0.2s;
         }
-        .btn-logout:hover { background-color: #c9302c; }
+        .btn-logout:hover { background-color: #c9302c; transform: scale(1.05); }
 
         .btn-history {
             background-color: #17a2b8;
             color: white;
             border: none;
             padding: 8px 15px;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 14px;
             cursor: pointer;
             font-weight: bold;
             transition: 0.2s;
         }
-        .btn-history:hover { background-color: #138496; }
+        .btn-history:hover { background-color: #138496; transform: scale(1.05); }
+
+        /* Animated Typing Text */
+        .typing-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+        .typing-text {
+            color: #d9534f;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 900;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 2px solid #0b2e59;
+            width: 25ch; /* Exact character length */
+            animation: typing 4s steps(25, end) infinite alternate,
+                       blink 0.5s step-end infinite alternate;
+        }
+        @keyframes typing {
+            0% { width: 0; }
+            100% { width: 25ch; }
+        }
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
 
         /* Modern Toast Notifications */
         #toast-container {
@@ -184,9 +224,9 @@
         .btn-delete { background-color: #d9534f; color: white; }
         .btn-delete:hover { background-color: #c9302c; }
 
-        /* Report Page Styles */
+        /* Report Page Styles (White Background Enforced) */
         #report-screen {
-            background-color: white;
+            background-color: white !important;
             justify-content: flex-start;
             padding: 40px;
             font-family: 'Times New Roman', Times, serif;
@@ -203,6 +243,7 @@
             margin: 0 auto 50px auto;
             border-bottom: 2px dashed #ccc; 
             padding-bottom: 50px;
+            background-color: white;
         }
 
         .report-header {
@@ -244,7 +285,6 @@
             white-space: nowrap;
         }
         
-        /* Modernized Title Line */
         .title-area {
             font-family: 'Segoe UI', Arial, sans-serif;
             font-size: 18px;
@@ -307,8 +347,8 @@
                 size: A4 portrait;
                 margin: 0.5in;
             }
-            body { background-color: white; }
-            .screen { min-height: auto; padding: 0; display: block; }
+            body { background: white !important; }
+            .screen { min-height: auto; padding: 0; display: block; background: white !important; }
             #report-screen { padding: 0; }
             
             .report-page {
@@ -377,9 +417,14 @@
     <div id="dashboard-screen" class="screen hidden">
         <div class="form-container" style="max-width: 600px;">
             
+            <!-- Animated Typing Text added to Dashboard -->
+            <div class="typing-container">
+                <div class="typing-text">Invention Of Radoan Rasel</div>
+            </div>
+
             <!-- Welcome Header with Top Navigation Buttons -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 id="welcome-text" style="text-transform: uppercase; margin: 0;">Welcome</h2>
+                <h2 id="welcome-text" style="text-transform: uppercase; margin: 0; color: #0b2e59; font-weight: 900;">Welcome</h2>
                 <div style="display: flex; gap: 10px;">
                     <button class="btn-history" onclick="showHistory()">HISTORY</button>
                     <button class="btn-logout" onclick="handleLogout()">LOG OUT</button>
@@ -436,13 +481,13 @@
     <div id="history-screen" class="screen hidden">
         <div class="form-container" style="max-width: 700px;">
             <h2>Saved Reports History</h2>
-            <div style="max-height: 400px; overflow-y: auto;">
+            <div style="max-height: 400px; overflow-y: auto; margin-top: 20px;">
                 <table class="history-table">
                     <thead>
                         <tr>
                             <th>DATE</th>
                             <th>FLIGHT NO</th>
-                            <th>CATEGORY</th> <!-- NEW COLUMN -->
+                            <th>CATEGORY</th>
                             <th>ACTIONS</th>
                         </tr>
                     </thead>
@@ -476,7 +521,7 @@
             'ZYL': [531,533,535,537,539],
             'CXB': [141,143,145,147,149,151,153,155,157,159],
             'RJH': [161,163,165,167,169],
-            'SPD': [181,183,185,187,189,191,193,195,197,199], // ADDED SPD FLIGHTS HERE
+            'SPD': [181,183,185,187,189,191,193,195,197,199], // ADDED NEW FLIGHTS HERE
             'BZL': [171,173,175,179],
             'JSR': [121,123,125,127,129],
             'DXB': [341,343],
